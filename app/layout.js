@@ -7,8 +7,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"], dis
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"], display: "swap" });
 
 const TITLE = "CASE STUDY - DAPURBUZZER.CO.ID";
-const DESC =
-  "Proxy API untuk mengakses Instagram Spam Filter Sprintpedia via backend (auto login + CSRF handling). Studi kasus integrasi dari dapurbuzzer.co.id.";
+const DESC = "CASE STUDY - PROXY API UNTUK INSTAGRAM SPAM FILTER DI SPRINTPEDIA - Imam Bahri Alwi";
 const DOMAIN = "https://sprintpedia-igcheckher.vercel.app";
 const OG_IMAGE = "/og.png";
 
@@ -17,6 +16,7 @@ export const metadata = {
   title: TITLE,
   description: DESC,
   icons: { icon: "/favicon.ico" },
+  creator: "imambahrialwi21@gmail.com",
   keywords: [
     "Sprintpedia",
     "Instagram Spam Filter",
