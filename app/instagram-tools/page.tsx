@@ -1,7 +1,7 @@
 // app/instagram-tools/page.tsx
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {  useMemo,  useState } from "react";
 import { Instagram, Search, Check, AlertTriangle, RotateCw, AtSign, X, Copy, EyeOff, Eye, Globe, ArrowUpRight, Loader2, } from "lucide-react";
 
 type ApiOk = { ok: true; data: any; source?: string; checked_at?: string; debug?: any[] };
@@ -15,22 +15,45 @@ export default function Page() {
     const [showRaw, setShowRaw] = useState(true);
     const [showDbg, setShowDbg] = useState(true);
 
-    // Local UI states
-    const [copyOk, setCopyOk] = useState<string | null>(null); // toast text
     const [touched, setTouched] = useState(false);
-    const toastTimer = useRef<NodeJS.Timeout | null>(null);
 
-    useEffect(() => {
-        return () => {
-            if (toastTimer.current) clearTimeout(toastTimer.current);
-        };
-    }, []);
 
-    function showToast(msg: string) {
-        setCopyOk(msg);
-        if (toastTimer.current) clearTimeout(toastTimer.current);
-        toastTimer.current = setTimeout(() => setCopyOk(null), 1600);
+    function CopyButton({
+        id,
+        getText,
+        className = "inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs hover:bg-muted transition",
+    }: {
+        id: string;
+        getText: () => string;
+        className?: string;
+    }) {
+        const [justCopied, setJustCopied] = useState(false);
+
+        async function handleCopy() {
+            try {
+                await navigator.clipboard.writeText(getText());
+                setJustCopied(true);
+                const t = setTimeout(() => setJustCopied(false), 1600);
+                return () => clearTimeout(t);
+            } catch (e) {
+                console.error("Copy failed:", e);
+            }
+        }
+
+        return (
+            <button
+                type="button"
+                onClick={handleCopy}
+                aria-live="polite"
+                aria-label={justCopied ? "Copied" : "Copy to clipboard"}
+                className={className}
+            >
+                {justCopied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                {justCopied ? "Copied" : "Copy"}
+            </button>
+        );
     }
+
 
 
     const validate = (v: string) => {
@@ -81,8 +104,7 @@ export default function Page() {
             {(resp as ApiOk)?.checked_at && (
                 <>
                     <span aria-hidden="true">•</span>
-
-                    <time className="tabular-nums">{new Date((resp as ApiOk).checked_at!).toLocaleString()}</time>
+                    <time className="tabular-nums">{new Date((resp as ApiOk).checked_at!).toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</time>
                 </>
             )}
         </div>
@@ -293,18 +315,11 @@ export default function Page() {
                                 <div className="flex items-center justify-between px-4 py-2 sm:px-5">
                                     <div className="text-sm font-medium">Raw JSON</div>
                                     <div className="flex items-center gap-2">
-                                        <button
-                                            className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs hover:bg-muted transition"
-                                            onClick={() => {
-                                                const toCopy = JSON.stringify((resp as ApiOk).data, null, 2);
-                                                navigator.clipboard?.writeText(toCopy);
-                                                showToast("JSON disalin");
-                                            }}
-                                            type="button"
-                                        >
-                                            <Copy className="h-3.5 w-3.5" />
-                                            Copy
-                                        </button>
+                                        <CopyButton
+                                            id="raw"
+                                            getText={() => JSON.stringify((resp as ApiOk).data, null, 2)}
+                                        />
+
                                         <button
                                             className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs hover:bg-muted transition"
                                             onClick={() => setShowRaw((s) => !s)}
@@ -343,18 +358,11 @@ export default function Page() {
                                     <div className="mb-2 flex items-center justify-between">
                                         <div className="text-sm font-medium">Debug Steps</div>
                                         <div className="flex items-center gap-2">
-                                            <button
-                                                className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs hover:bg-muted transition"
-                                                onClick={() => {
-                                                    const toCopy = JSON.stringify((resp as ApiErr).debug, null, 2);
-                                                    navigator.clipboard?.writeText(toCopy);
-                                                    showToast("Debug disalin");
-                                                }}
-                                                type="button"
-                                            >
-                                                <Copy className="h-3.5 w-3.5" />
-                                                Copy
-                                            </button>
+                                            <CopyButton
+                                                id="debug"
+                                                getText={() => JSON.stringify((resp as ApiErr).debug, null, 2)}
+                                            />
+
                                             <button
                                                 className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs hover:bg-muted transition"
                                                 onClick={() => setShowDbg((s) => !s)}
@@ -392,21 +400,6 @@ export default function Page() {
                 </section>
             )}
 
-            {/* Toast */}
-            <div
-                className={`pointer-events-none fixed inset-x-0 top-3 z-50 flex justify-center transition 
-        ${copyOk ? "opacity-100" : "opacity-0"}`}
-                aria-live="polite"
-            >
-                <div
-                    className={`pointer-events-auto inline-flex items-center gap-2 rounded-full border bg-background/95 px-3 py-1.5 text-xs shadow-lg backdrop-blur transition
-          ${copyOk ? "scale-100" : "scale-95"}`}
-                    role="status"
-                >
-                    <Check className="h-4 w-4 text-emerald-600" />
-                    {copyOk}
-                </div>
-            </div>
         </main>
     );
 }
