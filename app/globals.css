@@ -1,26 +1,100 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 255 255 255;
+  --foreground: 15 23 42;
+  /* slate-900-ish */
+  --muted: 248 250 252;
+  /* slate-50-ish */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  --background: 2 6 23;
+  /* slate-950-ish */
+  --foreground: 241 245 249;
+  /* slate-100-ish */
+  --muted: 15 23 42;
+  /* slate-900-ish */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+
+  html,
+  body {
+    @apply bg-[rgb(var(--background))] text-[rgb(var(--foreground))];
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+:where(button, a, input, textarea, select) {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60 focus-visible:ring-offset-0;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, rgb(var(--foreground)) 20%, transparent);
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@layer utilities {
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  .skeleton-base {
+    background-color: rgba(148, 163, 184, 0.20);
+  }
+
+  .shimmer {
+    background-image: linear-gradient(90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.55) 50%,
+        rgba(255, 255, 255, 0) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.25s linear infinite;
+  }
+
+  .skeleton-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skeleton-shimmer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.45) 50%,
+        rgba(255, 255, 255, 0) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.25s linear infinite;
+    border-radius: inherit;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+
+    .shimmer,
+    .skeleton-shimmer::before {
+      animation: none !important;
+    }
+  }
 }
