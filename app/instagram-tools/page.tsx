@@ -1,7 +1,7 @@
 // app/instagram-tools/page.tsx
 "use client";
 
-import React, {  useMemo,  useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Instagram, Search, Check, AlertTriangle, RotateCw, AtSign, X, Copy, EyeOff, Eye, Globe, ArrowUpRight, Loader2, } from "lucide-react";
 
 type ApiOk = { ok: true; data: any; source?: string; checked_at?: string; debug?: any[] };
@@ -111,33 +111,47 @@ export default function Page() {
     );
 
     return (
-        <main className="mx-auto max-w-3xl p-6">
-            {/* Header */}
+        <main className="mx-auto max-w-3xl px-4 sm:px-6 py-6">
+
             <header className="mb-6">
-                <div className="flex items-start justify-between gap-4">
-                    <div>
-                        <h1 className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
-                            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600/10 text-blue-600">
+                <div className="flex items-start justify-between gap-3 sm:gap-4">
+                    <div className="min-w-0 flex-1">
+                        <h1 className="flex items-center gap-2 text-xl sm:text-2xl font-semibold leading-tight">
+                            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600/10 text-blue-600 shrink-0">
                                 <Instagram className="h-5 w-5" />
                             </span>
-                            Instagram Spam Filter Check
+                            <span className="truncate">Instagram Spam Filter Check</span>
                         </h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
+                        <p className="mt-1 text-xs sm:text-sm text-muted-foreground leading-snug line-clamp-2 sm:line-clamp-none">
                             Pemeriksaan status filter spam & info profil (via Sprintpedia Proxy).
                         </p>
                     </div>
-                    <a
-                        href="https://sprintpedia.id"
-                        target="_blank"
-                        className="group inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm hover:bg-muted transition"
-                        rel="noreferrer"
-                    >
-                        <Globe className="h-4 w-4" />
-                        Sprintpedia
-                        <ArrowUpRight className="h-3.5 w-3.5 opacity-60 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                    </a>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                        <a
+                            href="https://sprintpedia.id"
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label="Buka Sprintpedia"
+                            className="sm:hidden inline-flex h-9 w-9 items-center justify-center rounded-lg border hover:bg-muted transition"
+                        >
+                            <Globe className="h-4 w-4" />
+                        </a>
+
+                        <a
+                            href="https://sprintpedia.id"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="hidden sm:inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm hover:bg-muted transition whitespace-nowrap"
+                        >
+                            <Globe className="h-4 w-4" />
+                            Sprintpedia
+                            <ArrowUpRight className="h-3.5 w-3.5 opacity-60 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                        </a>
+                    </div>
                 </div>
             </header>
+
 
             {/* Form Card */}
             <section
