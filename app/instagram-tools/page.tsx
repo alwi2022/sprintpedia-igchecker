@@ -95,20 +95,37 @@ export default function Page() {
 
 
 
-    const statusBar = (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1">
-                <Globe className="h-3.5 w-3.5" />
-                {(resp as ApiOk)?.source ?? "sprintpedia"}
-            </span>
-            {(resp as ApiOk)?.checked_at && (
-                <>
-                    <span aria-hidden="true">•</span>
-                    <time className="tabular-nums">{new Date((resp as ApiOk).checked_at!).toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</time>
-                </>
-            )}
-        </div>
-    );
+    function StatusBar({ resp }: { resp: ApiResp | null }) {
+        if (!resp || !("ok" in resp) || !resp.ok) return null;
+        const src = (resp as ApiOk).source ?? "sprintpedia";
+        const checked = (resp as ApiOk).checked_at;
+
+        return (
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] sm:text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1 min-w-0">
+                    <Globe className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{src}</span>
+                </span>
+
+                {checked && (
+                    <>
+                        <span className="hidden sm:inline" aria-hidden="true">•</span>
+                        <time className="tabular-nums whitespace-nowrap">
+                            {new Intl.DateTimeFormat("id-ID", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                timeZone: "Asia/Jakarta",
+                            }).format(new Date(checked))}
+                        </time>
+                    </>
+                )}
+            </div>
+        );
+    }
+
 
     return (
         <main className="mx-auto max-w-3xl px-4 sm:px-6 py-6">
@@ -247,26 +264,30 @@ export default function Page() {
                     aria-live="polite"
                     className="mt-6 overflow-hidden rounded-2xl border bg-background shadow-sm ring-1 ring-black/[0.02]"
                 >
-                    <div className="flex items-center justify-between gap-4 border-b px-4 py-3 sm:px-5">
-                        {"ok" in resp && resp.ok ? (
-                            <div className="flex items-center gap-2">
-                                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600">
-                                    <Check className="h-4 w-4" />
-                                </span>
-                                <div className="font-medium text-emerald-700">Berhasil memuat data</div>
-                            </div>
-                        ) : (
-                            <div className="flex items-center gap-2">
-                                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-red-500/10 text-red-600">
-                                    <AlertTriangle className="h-4 w-4" />
-                                </span>
-                                <div className="font-medium text-red-700">
-                                    Gagal: {(resp as ApiErr).error || "Terjadi kesalahan"}
-                                </div>
-                            </div>
-                        )}
-                        {"ok" in resp && resp.ok && statusBar}
+                    <div className="flex flex-col gap-2 border-b px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5">
+                        <div className="flex items-center gap-2 min-w-0">
+                            {"ok" in resp && resp.ok ? (
+                                <>
+                                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600">
+                                        <Check className="h-4 w-4" />
+                                    </span>
+                                    <div className="font-medium text-emerald-700 truncate">Berhasil memuat data</div>
+                                </>
+                            ) : (
+                                <>
+                                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-red-500/10 text-red-600">
+                                        <AlertTriangle className="h-4 w-4" />
+                                    </span>
+                                    <div className="font-medium text-red-700 truncate">
+                                        Gagal: {(resp as ApiErr).error || "Terjadi kesalahan"}
+                                    </div>
+                                </>
+                            )}
+                        </div>
+
+                        <StatusBar resp={resp} />
                     </div>
+
 
                     {"ok" in resp && resp.ok ? (
                         <>
